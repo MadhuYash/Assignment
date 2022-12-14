@@ -1,0 +1,95 @@
+MY SQL assignment Questions:
+
+Emp Assignment:
+
+1st:
+select * from emp;
+
+2nd:
+select dept.deptname,dept.deptid,count(empid)FROM dept inner join emp on emp.deptid = dept.deptid group by dept.deptid;
+
+3rd:
+select c.cityname,c.cityid,count(empid)FROM city c inner join emp on emp.cityid = c.cityid group by c.cityid;
+
+4th:
+select * from emp where salary between
+(salary > select salary from emp group by salary order by salary asc limit 3,1) and
+(salary <select salary from emp group by salary order by salary desc limit 3,1)
+order by salary;
+
+5th:
+select *, date_format(from_days(datediff(now(), doj)), '%Y') as age from emp where date_format(from_days(datediff(now(), doj)), '%Y')>= 15;
+
+6th:
+select * from emp where doj between '2020-01-01' AND '2022-12-31';
+
+7th:
+select *, date_format(from_days(datediff(now(), doj)), '%Y') as age from emp where date_format(from_days(datediff(now(), doj)), '%Y')< 1;
+
+8th:
+select * from emp where day(dob) in(31,21,6);
+
+9th:
+select * from emp where DATE_FORMAT(FROM_DAYS(DATEDIFF(NOW(), dob)), '%Y')>= 45; 
+
+10th:
+update emp set salary = salary + (salary * 15/100) where date_format(from_days(datediff(now(), doj)), '%Y')>5 and date_format(from_days(datediff(now(), doj)), '%Y')<10;
+
+User Assignment:
+
+1st:
+select u.*,p.postid,count(p.postid) from user as u JOIN post as p on u.userid = p.userid
+where u.userid = p.userid
+group by u.username 
+having count(p.userid) = (select max(count) from 
+(select count(p.userid) as count FROM user AS u,post AS p   
+where u.userid=p.userid  group by u.username ) AS c ) order by u.username;
+
+2nd:
+select u.*,p.postid,count(p.postid) from user as u JOIN post as p on u.userid = p.userid
+where u.userid = p.userid
+group by u.username 
+having count(p.userid) = (select min(count) from 
+(select count(p.userid) as count FROM user AS u,post AS p   
+where u.userid=p.userid  group by u.username ) AS c ) order by u.username;
+
+3rd:
+select * from user u
+join user_hobbies uh on u.userid = uh.userid
+join hobbies h on h.hobyid = uh.hobyid
+group by u.username having count(*) <3;
+
+4th:
+select * from user u
+join user_hobbies uh on u.userid = uh.userid
+join hobbies h on h.hobyid = uh.hobyid
+group by u.username having count(*) =0;
+
+5th:
+select * from user u
+join user_hobbies uh on u.userid = uh.userid
+join hobbies h on h.hobyid = uh.hobyid
+group by u.username having count(*) =1;
+
+6th:
+select * from user u
+join post p on p.userid = u.userid
+where p.date_time not in (CURRENT_DATE() - interval 7 day,CURRENT_DATE() - interval 14 day,CURRENT_DATE() - interval 30 day);
+
+7th:
+select * from user u
+join post p on p.userid = u.userid
+group by p.date_time having count(*) >=2;
+
+8th:
+select * from usercategory u join post p on p.userid = u.catid group by p.catid having count(*) >1;
+
+9th:
+select * from usercategory u join post p on p.userid = u.catid group by p.catid having count(*) =1;
+
+10th: 
+select * from category where catid not in(select catid from post);
+
+
+
+
