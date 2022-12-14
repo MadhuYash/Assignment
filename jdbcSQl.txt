@@ -1,0 +1,199 @@
+JDBC Assignment:
+
+1st Example JDBC Program for queries:
+
+import java.sql.*;
+
+class InsertCategories{
+	
+	public static void main (String args[]){
+		 try{
+			 Class.forName("com.mysql.cj.jdbc.Driver");	
+		 }catch (ClassNotFoundException ce){
+			  ce.printStackTrace();
+		 }
+		
+		//string url, username, password.
+		//datbase name userbill:- root , Root12345
+		  try{
+				Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/customer_billing","root","Root12345");	
+				if(conn != null){
+				System.out.println("Connection Established");
+				String query = "insert into category(catname,pcatid) values ('shaving_cream',11), ('deo',11), ('mens_formal_shirts',12) ;";
+				PreparedStatement ps = conn.prepareStatement(query);
+				int i = ps.executeUpdate();
+				System.out.println("Records Inserted : "+i);
+				}
+			}catch (SQLException se){
+			  se.printStackTrace();
+			}
+			
+	
+	}
+}
+
+2nd Program for JDBC:
+
+import java.sql.*;
+
+public class CustNotBuyProduct
+{
+	public static void main (String args[]){
+		 try{
+			 Class.forName("com.mysql.cj.jdbc.Driver");	
+		 }catch (ClassNotFoundException ce){
+			  ce.printStackTrace();
+		 }
+		
+		//string url, username, password.
+		//datbase name userbill:- root , Root12345
+		  try{
+				Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/customer_billing","root","Root12345");	
+				if(conn != null){
+				System.out.println("Connection Established");
+				String query = "select * from customer where custid not in (select custid from bill);";
+				PreparedStatement ps = conn.prepareStatement(query);
+				ResultSet rs = ps.executeQuery();
+					while(rs.next()){
+						System.out.println("Customer who didnt buy any product : "+rs.getString("custname"));
+					}
+				}
+			}catch (SQLException se){
+			  se.printStackTrace();
+			}
+			
+	
+	}
+	
+}
+
+3rd Program for JDBC:
+
+import java.sql.*;
+
+
+class HighestPriceItem{
+	
+	public static void main (String args[]){
+		 try{
+			 Class.forName("com.mysql.cj.jdbc.Driver");	
+		 }catch (ClassNotFoundException ce){
+			  ce.printStackTrace();
+		 }
+		
+		//string url, username, password.
+		//datbase name userbill:- root , Root12345
+		  try{
+				Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/customer_billing","root","Root12345");	
+				if(conn != null){
+				System.out.println("Connection Established");
+				String query = "select a.pname,a.price,b.catname from product a  join category b on b.catid = a.catid where price = (select max(price) from product);";
+				PreparedStatement ps = conn.prepareStatement(query);
+				ResultSet rs = ps.executeQuery();
+					while(rs.next()){
+						System.out.println("Highest price item by catagories : "+rs.getString("catname"));
+					}
+				}
+			}catch (SQLException se){
+			  se.printStackTrace();
+			}
+			
+	
+	}
+}
+
+4th program for JDBC:
+
+import java.sql.*;
+
+
+class CompanyNameAlongCatagories{
+	
+	public static void main (String args[]){
+		 try{
+			 Class.forName("com.mysql.cj.jdbc.Driver");	
+		 }catch (ClassNotFoundException ce){
+			  ce.printStackTrace();
+		 }
+		
+		//string url, username, password.
+		//datbase name userbill:- root , Root12345
+		  try{
+				Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/customer_billing","root","Root12345");	
+				if(conn != null){
+				System.out.println("Connection Established");
+				String query = "select a.catname as category_name,c.catname as product_name,e.compname as company_name  from category a left join category c on c.pcatid = a.catid left join product b on b.catid = a.catid left join company e on b.compid = e.compid;";
+				PreparedStatement ps = conn.prepareStatement(query);
+				ResultSet rs = ps.executeQuery();
+				System.out.println("category_name\t\tproduct_name\t\tcompany_name");
+					while(rs.next()){
+						System.out.print(rs.getString("category_name") +"\t\t");
+						System.out.print(rs.getString("product_name") +"\t\t");
+						System.out.print(rs.getString("company_name") +"\t\t");
+						System.out.println();
+						
+					}
+				}
+			}catch (SQLException se){
+			  se.printStackTrace();
+			}
+			
+	
+	}
+}
+
+Like this, i write queries only for all jdbc assignment:
+
+5th:
+order by date wise:
+select a.billitemid,b.date,d.custname,c.pname,e.catname,c.price,a.qty,a.price,c.mfdate,c.expdate,f.compname from billitem  a
+join  bill b on b.billno = a.billno
+join  product c on  c.pid = a.prodid
+join customer d on d.custid = b.custid
+join category  e on e.catid = c.catid
+join company f on f.compid = c.compid
+order by b.date;
+
+6th:
+total purchase amount
+select a.billitemid,b.date,d.custname,c.pname,e.catname,c.price,a.qty,a.price,sum(a.price)as total_spent,c.mfdate,c.expdate,f.compname from billitem  a
+join  bill b on b.billno = a.billno
+join  product c on  c.pid = a.prodid
+join customer d on d.custid = b.custid
+join category  e on e.catid = c.catid
+join company f on f.compid = c.compid
+group by a.billitemid;
+
+7th:
+select a.compname,count(pid) from company a
+   join product b on b.compid = a.compid
+   group by a.compname;
+   
+8th:
+select a.catname as category_name,c.catname as product_name,e.compname as company_name ,count(b.pid) as item_count from category a
+left join category c on c.pcatid = a.catid
+left join product b on b.catid = a.catid
+left join company e on b.compid = e.compid
+group by e.compname,
+a.catname,
+c.catname;
+
+9th:
+select pr.pname,count(pid) from products_returned pr
+join customer c on c.custid=pr.custid;
+
+10th:
+select a.billitemid,b.date,c.pname,a.qty,a.price as total_price,sum(a.qty)as total_sales,f.compname from billitem  a
+join  bill b on b.billno = a.billno
+join  product c on  c.pid = a.prodid
+join company f on f.compid = c.compid
+group by a.billitemid;
+
+12th:
+select a.billitemid,d.custname,c.pname,e.catname,a.qty as total_items from billitem  a
+join  bill b on b.billno = a.billno
+join  product c on  c.pid = a.prodid
+join customer d on d.custid = b.custid
+join category  e on e.catid = c.catid
+group by a.billitemid;
+
